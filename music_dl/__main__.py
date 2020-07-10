@@ -42,7 +42,11 @@ def menu(songs_list):
         + "\n >>"
     )
 
-    choices = click.prompt(prompt)
+    if config.get("number") == 1:
+        choices = '0' # If only one choice is specified
+    else:
+        choices = click.prompt(prompt)
+
 
     while not re.match(r"^((\d+\-\d+)|(\d+)|\s+)+$", choices):
         if choices.lower() == "n":
@@ -66,8 +70,12 @@ def menu(songs_list):
 def run():
     ms = MusicSource()
     if config.get("keyword"):
+        if config.get("keyword").lower() in ['exit', 'quit']:
+            return
         songs_list = ms.search(config.get("keyword"), config.get("source").split())
         menu(songs_list)
+        if config.get("number") == 1:
+            return
         config.set("keyword", click.prompt(_("请输入要搜索的歌曲，或Ctrl+C退出") + "\n >>"))
         run()
     elif config.get("playlist"):
